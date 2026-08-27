@@ -1,4 +1,3 @@
-import { use } from "react";
 import { useState, useEffect } from "react"
 
 const Tarefas = () => {
@@ -18,9 +17,62 @@ const Tarefas = () => {
         localStorage.setItem("item-tarefa", JSON.stringify(tarefas))
     }, [tarefas]);
 
+    //função adicionar tarefa
+                           //e = event
+    const AdicionarTarefa = (e) => {
+        e.preventDefault();
+        if(!campo.trim()) return;
+
+        const novaTarefa = {
+            id: Date.now(),
+            text: campo,
+        };
+                   //spread
+        setTarefas([...tarefas, novaTarefa]);
+        setCampo(); //limpa o campo para começar um novo cadastro
+    }
+
+     const RemoverTarefa=(id)=>{
+        const apagarTarefa=tarefas.filter((tarefa)=>tarefa.id !== id);
+        setTarefas(apagarTarefa)
+    };
+
   return (
     <>
-      <h1>Teste</h1>
+          <div className="todo-container">
+              <h2>Minha Lista de Tarefas</h2>
+
+              <form onSubmit={AdicionarTarefa} className="todo-form">
+                  <input
+                      type="text"
+                      value={campo}
+                      onChange={(e) => setCampo(e.target.value)}
+                      placeholder="Digite uma nova tarefa..."
+                      className="todo-input"
+                  />
+                  <button type="submit" className="btn-adicionar">
+                      Adicionar
+                  </button>
+              </form>
+
+              <ul className="todo-lista">
+                  {tarefas.map((tarefa) => (
+                      <li key={tarefa.id} className="todo-item">
+                          <span>{tarefa.text}</span>
+                          {/* arrow function (função seta) que encapsula a execução de outra função. 
+            Ela garante que removerTarefa só seja executada quando o evento acontecer (como um clique de botão), 
+            e não assim que a página carregar.
+            */}
+                          <button onClick={() => RemoverTarefa(tarefa.id)}
+                              className="btn-delete"
+                          >
+                              Excluir
+                          </button>
+                      </li>
+                  ))}
+              </ul>
+              {tarefas.length === 0 && <p className="mensagem">Nenhuma tarefa salva.</p>}
+        </div>
     </>
   )
 }
